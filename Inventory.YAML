@@ -2,9 +2,9 @@ name: 1.$(Year:yy).$(DayOfYear)$(Rev:.rr)
 resources:
   - repo: self
 variables:
-  DomainName: 'Certifications'
-  RestoreBuildProjects: 'src/MicroServices/$(DomainName)/**/*.csproj'
-  TestProjects: 'src/MicroServices/$(DomainName)/**/*Tests/*.csproj'
+  DomainName: 'inventory'
+  RestoreBuildProjects: 'src/$(DomainName)/**/*.csproj'
+  TestProjects: 'src/$(DomainName)/**/*Tests/*.csproj'
 
 jobs:
 - job: Database
@@ -15,14 +15,14 @@ jobs:
   - task: VSBuild@1
     displayName: 'Build solution DB Project'
     inputs:
-      solution: src/MicroServices/$(DomainName)/**.sqlproj
+      solution: src/$(DomainName)/**.sqlproj
 
   - task: PowerShell@2
     displayName: 'Artifact SQL Dacpacs'
     inputs:
       targetType: filePath
-      filePath: 'src/MicroServices/artifact-dacpacs.ps1'
-      arguments: '-sourceFolder $(build.SourcesDirectory)/src/MicroServices/$(DomainName) -artifactFolder $(build.artifactstagingdirectory)'
+      filePath: 'src/artifact-dacpacs.ps1'
+      arguments: '-sourceFolder $(build.SourcesDirectory)/src/$(DomainName) -artifactFolder $(build.artifactstagingdirectory)'
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: dacpac_drop'
@@ -74,7 +74,7 @@ jobs:
   - task: VSBuild@1
     displayName: 'Build solution DB Project'
     inputs:
-      solution: src/MicroServices/$(DomainName)/**.sqlproj
+      solution: src/$(DomainName)/**.sqlproj
 
   - task: DotNetCoreCLI@2
     displayName: Build
@@ -87,7 +87,7 @@ jobs:
     inputs:
       command: test
       projects: '$(TestProjects)'
-      arguments: '--configuration $(BuildConfiguration) --collect "Code coverage" --settings $(Build.SourcesDirectory)/src/MicroServices/test.RunSettings --no-build --no-restore --filter TestCategory!=Integration'
+      arguments: '--configuration $(BuildConfiguration) --collect "Code coverage" --settings $(Build.SourcesDirectory)/src/test.RunSettings --no-build --no-restore --filter TestCategory!=Integration'
 
   - task: DotNetCoreCLI@2
     displayName: 'Unigration Tests - Sonar'
@@ -95,7 +95,7 @@ jobs:
       command: 'custom'
       projects: '$(TestProjects)'
       custom: 'test'
-      arguments: '--logger trx --configuration $(BuildConfiguration) --collect "Code coverage" --results-directory $(Common.TestResultsDirectory) --no-build --no-restore --settings $(Build.SourcesDirectory)/src/MicroServices/test.RunSettings --filter TestCategory!=Integration'
+      arguments: '--logger trx --configuration $(BuildConfiguration) --collect "Code coverage" --results-directory $(Common.TestResultsDirectory) --no-build --no-restore --settings $(Build.SourcesDirectory)/src/test.RunSettings --filter TestCategory!=Integration'
 
   - task: SonarSource.sonarcloud.ce096e50-6155-4de8-8800-4221aaeed4a1.SonarCloudAnalyze@1
     displayName: 'Run Code Analysis'
@@ -113,7 +113,7 @@ jobs:
     inputs:
       command: publish
       publishWebProjects: false
-      projects: 'src/MicroServices/$(DomainName)/**/*.WebApi/*.csproj'
+      projects: 'src/$(DomainName)/**/*.WebApi/*.csproj'
       arguments: '--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)'
       zipAfterPublish: false
 
@@ -122,7 +122,7 @@ jobs:
     inputs:
       command: publish
       publishWebProjects: false
-      projects: 'src/MicroServices/$(DomainName)/**/*.OData/*.csproj'
+      projects: 'src/$(DomainName)/**/*.OData/*.csproj'
       arguments: '--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)'
       zipAfterPublish: false
 
@@ -130,8 +130,8 @@ jobs:
     displayName: 'Artifact CI/CD scripts'
     inputs:
       targetType: filePath
-      filePath: 'src/MicroServices/artifact-ci-cd-scripts.ps1'
-      arguments: '-sourceFolder $(build.SourcesDirectory)/src/MicroServices -domainName $(DomainName) -artifactFolder $(build.artifactstagingdirectory)'
+      filePath: 'src/artifact-ci-cd-scripts.ps1'
+      arguments: '-sourceFolder $(build.SourcesDirectory)/src -domainName $(DomainName) -artifactFolder $(build.artifactstagingdirectory)'
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: ApiDrop'
@@ -143,8 +143,8 @@ jobs:
       workingdir: '$(SYSTEM.DEFAULTWORKINGDIRECTORY)'
       tagUser: 'ikemtz'
       tagEmail: 'ikemtz@outlook.com'
-      tag: 'cert-$(Build.BuildNumber)'
-      tagMessage: 'cert-$(Build.BuildNumber)'
+      tag: 'ivtr-$(Build.BuildNumber)'
+      tagMessage: 'ivtr-$(Build.BuildNumber)'
       useLightweightTags: true
       conditions: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
@@ -155,7 +155,7 @@ trigger:
     - master
   paths:
     include:
-    - src/MicroServices/Certifications/*
+    - src/inventory/*
 
 pr:
   branches:
@@ -163,7 +163,7 @@ pr:
     - master
   paths:
     include:
-    - src/MicroServices/Certifications/*
+    - src/inventory/*
 
 schedules:
   - cron: '0 0 * * Sun'
