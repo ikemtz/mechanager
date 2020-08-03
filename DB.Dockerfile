@@ -3,7 +3,7 @@ ENV SA_PASSWORD=SqlDockerRocks123! \
     ACCEPT_EULA=Y
 
 #Copy dacpacs
-COPY /src/inventory/IkeMtz.Mechanager.Inventory.Db/bin/Debug/*.dacpac /dacpac/
+COPY /src/inventory/Mechanager.Inventory.Db/bin/Debug/*.dacpac /dacpac/
 
 RUN /opt/mssql/bin/sqlservr & sleep 20 \
     && sqlpackage /Action:Publish /TargetServerName:localhost /TargetUser:SA /TargetPassword:$SA_PASSWORD /SourceFile:/dacpac/ivtrDb.dacpac /TargetDatabaseName:ivtrDb /p:BlockOnPossibleDataLoss=false \
