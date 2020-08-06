@@ -156,6 +156,7 @@ trigger:
   paths:
     include:
     - src/inventory/*
+    - Inventory.YAML
 
 pr:
   branches:
@@ -164,6 +165,7 @@ pr:
   paths:
     include:
     - src/inventory/*
+    - Inventory.YAML
 
 schedules:
   - cron: '0 0 * * Sun'
