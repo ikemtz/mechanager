@@ -62,8 +62,8 @@ jobs:
     inputs:
       SonarCloud: 'SonarCloud IkeMtz'
       organization: ikemtz
-      projectKey: NurseCRON_$(DomainName)
-      projectName: NurseCRON_$(DomainName)
+      projectKey: Mechanager_$(DomainName)
+      projectName: Mechanager_$(DomainName)
       extraProperties: |
         # Additional properties that will be passed to the scanner, 
         # Put one key=value per line, example:
@@ -122,7 +122,7 @@ jobs:
     inputs:
       command: publish
       publishWebProjects: false
-      projects: 'src/$(DomainName)/**/*.OData/*.csproj'
+      projects: 'src/$(DomainName)/*.OData/*.csproj'
       arguments: '--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)'
       zipAfterPublish: false
 
